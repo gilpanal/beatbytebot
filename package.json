@@ -1,0 +1,27 @@
+{
+  "name": "bostelbot",
+  "version": "0.0.0",
+  "description": "Telegram Bot and Node Web App to share music production and collaborate",
+  "main": "bot.js",
+  "scripts": {
+    "start":"node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "music",
+    "node",
+    "collaborate"
+  ],
+  "author": "gilpanal", 
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "firebase-admin": "^8.11.0",
+    "node-telegram-bot-api": "^0.40.0",
+    "request": "^2.88.2"
+  },
+  "engines": {
+    "node": "10.x"
+  }
+}
