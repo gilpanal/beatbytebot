@@ -4,13 +4,9 @@ const admin = require('firebase-admin')
 const accountFirebaseFile = (MODE === 'DEV') ? './account_dev.json' : './account.json'
 const serviceAccount = require(accountFirebaseFile)
 
-const TelegramBot = require('node-telegram-bot-api')
-
-const token = (MODE === 'DEV') ? process.env.TELEGRAM_TOKEN_DEV : process.env.TELEGRAM_TOKEN
-const bot = new TelegramBot(token, {polling: true})
-
 /**
- * INIT STUFF
+ * INIT DB STUFF
+ * In the future it should be able to move to any DB, not only Firebase
  */
 const dbURL = (MODE === 'DEV') ? process.env.DATABASE_URL_DEV : process.env.DATABASE_URL
 admin.initializeApp({
@@ -20,6 +16,11 @@ admin.initializeApp({
 
 const db = admin.database()
 const ref = db.ref('songs')
+
+
+const DB_Handler =  require('./dbhandler/dbhandler')
+const dbhandler = new DB_Handler(db,ref);
+
 
 /**
  *  WEB DEV SERVER STUFF
@@ -35,82 +36,46 @@ webdevserver.init()
  * BOT STUFF
  */
 
- 
-bot.on('message', (msg) => {    
-    handleMessage(msg)   
+const { Telegraf } = require('telegraf')
+const Telegram = require('telegraf/telegram')
+const token = (MODE === 'DEV') ? process.env.TELEGRAM_TOKEN_DEV : process.env.TELEGRAM_TOKEN
+const bot = new Telegraf(token)
+const telegram = new Telegram(token)
+
+const messageHandler = (message) =>{
+    
+    const chatId = message.chat.id
+
+    dbhandler.isChannelInDB(chatId).then((response)=>{
+
+        if(response.ok){         
+            
+            dbhandler.insertNewTypeInDB(message, response.result)
+
+        } else {
+            telegram.getChat(chatId).then((chatInfo)=>{
+                                
+                dbhandler.createNewEntry (chatId, chatInfo, message)
+         
+            }).catch((err)=>{
+                console.log(err)
+            })
+        }
+    })  
+}
+// CHANNELS
+
+bot.on('channel_post', (ctx) => {    
+    messageHandler(ctx.update.channel_post)       
 })
 
-bot.on('channel_post', (msg) => {     
-    handleMessage(msg)    
+// FOR GROUPS
+
+bot.on('message', (ctx) => {    
+    messageHandler(ctx.message)    
 })
 
-const handleMessage = (msg) => {    
-    const audio = msg.voice || msg.audio
-    const lyrics = msg.document 
-    if(audio){
-        bot.getFileLink(audio.file_id).then((filelink) => {
-            insertNewAudioIntoDB(filelink, msg)            
-        }).catch((error) => {
-            console.log(error.code)  // => 'ETELEGRAM'
-            console.log(error.response.body) // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
-        })
-    } else if (lyrics) {
-        bot.getFileLink(lyrics.file_id).then((filelink) => {
-            insertNewLyricsIntoDB(filelink, msg)            
-        }).catch((error) => {
-            console.log(error.code)  // => 'ETELEGRAM'
-            console.log(error.response.body) // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
-        })
-    }  
-}
-const insertNewAudioIntoDB = (filelink, msg) => {
-    const chatId = msg.chat.id        
-    const songRef = db.ref('/songs/' + chatId)   
-    songRef.once('value').then((snapshot) => {
-        const snap = snapshot.val()             
-        if(snap){
-            let tracks = snapshot.val().tracks                    
-            let update = {}                
-            if(tracks[0].link === ''){
-                tracks.shift()
-            }
-            tracks.push({link:filelink, msgInfo:msg})                
-            update['/songs/' + chatId + '/tracks'] = tracks         
-            db.ref().update(update)      
-        } else {  
-            // DB empty          
-            ref.child(chatId).set({
-                name: msg.chat.title,
-                lyrics: {link:'', msgInfo:''},
-                tracks: [{link:filelink, msgInfo:msg}]
-            })
-        }       
-        
-    }).catch((error) => {
-        console.log('Failed :', error)
-    })   
-}
-const insertNewLyricsIntoDB = (filelink, msg) => {
-    const chatId = msg.chat.id        
-    const songRef = db.ref('/songs/' + chatId)   
-    songRef.once('value').then((snapshot) => {
-        const snap = snapshot.val()
-        if(snap){                          
-            let update = {}                
-            update['/songs/' + chatId + '/lyrics'] = {link:filelink, msgInfo:msg}       
-            db.ref().update(update)                         
-        } else {    
-            // DB empty          
-            ref.child(chatId).set({
-                name: msg.chat.title,
-                lyrics: {link:filelink, msgInfo:msg},
-                tracks:[{link:'', msgInfo:''}]
-            })
-        }       
-        
-    }).catch((error) => {
-        console.log('Failed :', error)
-    })   
-}
+bot.launch()
+
 
 console.log('Server running at port: ', process.env.PORT || 8125)

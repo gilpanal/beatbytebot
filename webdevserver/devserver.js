@@ -62,7 +62,7 @@ module.exports = class WebDevServer {
         if (data) {
             const keys = Object.keys(data)
             keys.forEach(element => {
-                listElelemts += '<li><a href="song.html?id=' + element + '">' + data[element].name + '</a></li>'
+                listElelemts += '<li><a href="song.html?id=' + element + '">' + data[element].title + '</a></li>'
             })
         }
         const listTracks = '<ul>' + listElelemts + '</ul>'
