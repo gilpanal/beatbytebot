@@ -5,9 +5,9 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = class WebDevServer {
-    constructor(db, ref) {
-        this.db = db;
-        this.ref = ref;
+    constructor(dbhandler, bothelper) {
+        this.dbhandler = dbhandler
+        this.bothelper = bothelper
     }
 
     init() {
@@ -48,7 +48,7 @@ module.exports = class WebDevServer {
     selectPage = (filePath, response, extraInfo) => {
 
         if (filePath.includes('index')) {
-            this.ref.once('value', (snapshot) => {
+            this.dbhandler.ref.once('value', (snapshot) => {
                 const data = snapshot.val()
                 this.writeResponseForIndex(filePath, data, response)
             })
@@ -77,66 +77,66 @@ module.exports = class WebDevServer {
         response.end()
     }
     getResponseForSong = (filePath, response, extraInfo) => {
+        const songId = extraInfo.substring(extraInfo.indexOf('=') + 1)       
+        this.dbhandler.isChannelInDB(songId).then((resp) => {
+            if (resp.ok) {
+                const snapshot = resp.result
+                this.processSongResponse(snapshot, filePath, response, this.paintListOfTracks )
+            }
+        })
 
-        const songId = extraInfo.substring(extraInfo.indexOf('=') + 1)
-        const songRef = this.db.ref('/songs/' + songId)
+    }
+    processSongResponse = (snapshot, filePath, response, callBack) => {
         const objSong = {
             listHtml: '',
             channelName: 'Empty Channel',
             lyricsFile: null
         }
-        songRef.once('value').then((snapshot) => {
-            const snap = snapshot.val()
-
-            if (snap) {
-                const tracks = snapshot.val().tracks
-                const lyrics = snapshot.val().lyrics
-                objSong.channelName = snapshot.val().name
-                if (tracks && tracks.length) {
-                    if (lyrics && lyrics.link !== '') {
-                        objSong.lyricsFile = snapshot.val().lyrics.link
-                    }
-                    snapshot.val().tracks.forEach(element => {
-                        if (element.link !== '') {
-                            const audio = element.msgInfo.voice || element.msgInfo.audio
-                            let messageFrom = element.msgInfo.from && element.msgInfo.from.username
-
-                            const title = audio.title ? audio.title : element.msgInfo.date
-                            if (messageFrom) {
-                                messageFrom = 'From: ' + messageFrom
-                            } else {
-                                messageFrom = ''
-                            }
-
-                            objSong.listHtml += '<br>' + messageFrom + '<br>' + title + '<br><audio controls class="audio-file"><source src="' + element.link + '" type="' + audio.mime_type + '"></audio>'
-                        }
-
-                    })
-                } else if (lyrics && lyrics.link !== '') {
-                    objSong.lyricsFile = snapshot.val().lyrics.link
-                }
-            }
-
-        }).catch((error) => {
-            console.log('Failed :', error)
-        }).finally(() => {
-            this.paintListOfTracks(filePath, objSong, response)
+        
+        const tracks = snapshot.val().tracks
+        const lyrics = snapshot.val().document
+        objSong.channelName = snapshot.val().title
+        const doc = lyrics && this.bothelper.getDocFilePath(lyrics.file_id).then((doc_path) => {
+            return doc_path
         })
+        const alltracks = tracks && this.bothelper.getAllTracksInfo(tracks).then((allTracks) => {
+            return this.generateListOfHtml(allTracks)
 
+        })
+        const docPromise = doc || ''
+        const tracksPromise = alltracks || ''
+
+        Promise.all([docPromise, tracksPromise]).then((values) => {
+            objSong.lyricsFile = values[0]
+            objSong.listHtml = values[1]
+            callBack(filePath, objSong, response)            
+        }).catch((reason) => {
+            console.log(reason)
+        })
     }
-    paintListOfTracks = (filePath, objSong, response) =>{    
-        const extname = String(path.extname(filePath)).toLowerCase() 
+    generateListOfHtml = (allTracks) => {
+        let listHtml = ''
+        allTracks.forEach(element => {
+            const messageInfo = element.result
+            const audio = messageInfo.message.voice || messageInfo.message.audio
+            const fullLink = this.bothelper.default_filepath + messageInfo.file_path
+            listHtml += '<br><audio controls class="audio-file"><source src="' + fullLink + '" type="' + audio.mime_type + '"></audio>'
+        })
+        return listHtml
+    }
+    paintListOfTracks = (filePath, objSong, response) => {
+        const extname = String(path.extname(filePath)).toLowerCase()
         const contentType = mimeTypes[extname] || 'application/octet-stream'
         response.writeHead(200, { 'Content-Type': contentType })
-        response.write('<html><head><title>'+objSong.channelName+'</title></head><body>')
-        response.write('<a class="" href="/">Back</a><h4>'+objSong.channelName+'</h4>') 
-        if(objSong.lyricsFile){
-            response.write('<a class="" target="_blank" href="'+objSong.lyricsFile+'">Lyrics</a><br>')  
-        } 
-        response.write('<br><button onclick="play()">PLAY ALL</button><button onclick="pause()">PAUSE</button><br>')               
-        response.write(objSong.listHtml)    
+        response.write('<html><head><title>' + objSong.channelName + '</title></head><body>')
+        response.write('<a class="" href="/">Back</a><h4>' + objSong.channelName + '</h4>')
+        if (objSong.lyricsFile) {
+            response.write('<a class="" target="_blank" href="' + objSong.lyricsFile + '">Lyrics</a><br>')
+        }
+        response.write('<br><button onclick="play()">PLAY ALL</button><button onclick="pause()">PAUSE</button><br>')
+        response.write(objSong.listHtml)
         response.write('<script type="text/javascript">function pause(){const e=document.getElementsByClassName("audio-file");for(let l of e)l.pause()}</script>')
         response.write('<script type="text/javascript">function play(){const e=document.getElementsByClassName("audio-file");for(let l of e)l.play()}</script></body></html')
-        response.end()    
+        response.end()
     }
-};
+}

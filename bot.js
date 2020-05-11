@@ -19,21 +19,10 @@ const ref = db.ref('songs')
 
 
 const DB_Handler =  require('./dbhandler/dbhandler')
-const dbhandler = new DB_Handler(db,ref);
-
-
-/**
- *  WEB DEV SERVER STUFF
- *  The following code is only for demo purpose to display 
- *  info visaully in order to easily test the bot
- */
-
-const WebDevServer =  require('./webdevserver/devserver')
-const webdevserver = new WebDevServer(db,ref);
-webdevserver.init()
+const dbhandler = new DB_Handler(db,ref)
 
 /**
- * BOT STUFF
+ * INIT BOT STUFF
  */
 
 const { Telegraf } = require('telegraf')
@@ -41,38 +30,36 @@ const Telegram = require('telegraf/telegram')
 const token = (MODE === 'DEV') ? process.env.TELEGRAM_TOKEN_DEV : process.env.TELEGRAM_TOKEN
 const bot = new Telegraf(token)
 const telegram = new Telegram(token)
+const BotHelpers =  require('./bot_helpers')
+const bothelper = new BotHelpers(dbhandler, telegram, token)
 
-const messageHandler = (message) =>{
-    
-    const chatId = message.chat.id
+/**
+ *  WEB DEV SERVER STUFF
+ *  The following code is only for demo purpose to display 
+ *  info visually in order to easily test the info retrieval
+ */
 
-    dbhandler.isChannelInDB(chatId).then((response)=>{
+const WebDevServer =  require('./webdevserver/devserver')
+const webdevserver = new WebDevServer(dbhandler, bothelper)
+webdevserver.init()
 
-        if(response.ok){         
-            
-            dbhandler.insertNewTypeInDB(message, response.result)
 
-        } else {
-            telegram.getChat(chatId).then((chatInfo)=>{
-                                
-                dbhandler.createNewEntry (chatId, chatInfo, message)
-         
-            }).catch((err)=>{
-                console.log(err)
-            })
-        }
-    })  
-}
+/**
+ * BOT STUFF
+ */
+
+
+
 // CHANNELS
 
 bot.on('channel_post', (ctx) => {    
-    messageHandler(ctx.update.channel_post)       
+    bothelper.messageHandler(ctx.update.channel_post)       
 })
 
-// FOR GROUPS
+// GROUPS
 
 bot.on('message', (ctx) => {    
-    messageHandler(ctx.message)    
+    bothelper.messageHandler(ctx.message)    
 })
 
 bot.launch()

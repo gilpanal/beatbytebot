@@ -1,16 +1,15 @@
 module.exports = class DB_Handler {
     constructor(db, ref) {
-        this.db = db;
-        this.ref = ref;
+        this.db = db
+        this.ref = ref
     }
-
     isChannelInDB(chatId) {
         const response = {
             ok: false,
             result: null,
             error: null
         }
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.db.ref('/songs/' + chatId).once('value').then((snapshot) => {
                 const snap = snapshot.val()
                 response.result = snapshot
@@ -24,7 +23,7 @@ module.exports = class DB_Handler {
             }).finally(() => {
                 resolve(response)
             })
-        });
+        })
     }
     insertNewTypeInDB(message, snapshot) {
 
@@ -32,12 +31,12 @@ module.exports = class DB_Handler {
             this.insertNewAudioEntry (message, snapshot)
         } else if (message.document) {
             this.ref.child(message.chat.id).update({
-                "document": message.document
-            });
+                'document': message.document
+            })
         } else if (message.new_chat_photo) {
             this.ref.child(message.chat.id).update({
-                "photo": message.new_chat_photo
-            });
+                'photo': message.new_chat_photo
+            })
         } 
 
     }
@@ -68,4 +67,4 @@ module.exports = class DB_Handler {
         })
     }
 
-};
+}
