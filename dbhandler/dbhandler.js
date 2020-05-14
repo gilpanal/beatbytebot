@@ -35,7 +35,7 @@ module.exports = class DB_Handler {
             })
         } else if (message.new_chat_photo) {
             this.ref.child(message.chat.id).update({
-                'photo': message.new_chat_photo
+                'photo': message.new_chat_photo[0].file_id
             })
         } 
 

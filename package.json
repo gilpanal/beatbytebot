@@ -1,6 +1,6 @@
 {
   "name": "bostelbot",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Telegram Bot and Node Web App to share music production and collaborate",
   "main": "bot.js",
   "scripts": {
