@@ -26,6 +26,18 @@ module.exports = class Bot_Helper {
             }
         })  
     }
+    deleteMessage = async (edited_message) => {     
+        if(edited_message.document){            
+            const docDeletion = await this.dbhandler.deleteDocument(edited_message.chat.id, edited_message.document.file_name)
+            return docDeletion
+        } 
+        else if ( edited_message.audio || edited_message.voice) {                    
+            const audioFile = edited_message.audio || edited_message.voice      
+            const file_key =  audioFile.file_unique_id + '_' + edited_message.date  
+            const trackDeletion = await this.dbhandler.deleteTrack(edited_message.chat.id, file_key)
+            return trackDeletion
+        }
+    }
     
     getDocFilePath = async (file_id) => {
         const doc = await this.fetchFileInfo(file_id, {})       
@@ -53,7 +65,8 @@ module.exports = class Bot_Helper {
     getAllTracksInfo = async (tracks)=> {
         let alltracks = []
         for(const key in tracks){           
-            let trackInfo = await this.fetchFileInfo(key,tracks[key])
+            const file_id = tracks[key].id
+            let trackInfo = await this.fetchFileInfo(file_id,tracks[key])
             alltracks.push(trackInfo)         
         }
         return alltracks         

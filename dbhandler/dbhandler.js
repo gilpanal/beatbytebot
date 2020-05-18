@@ -48,7 +48,8 @@ module.exports = class DB_Handler {
             tracks = {}
         }
         let update = {}
-        tracks[audio.file_id] = { id: audio.file_id, message: message }
+        const file_key = audio.file_unique_id + '_' + message.date
+        tracks[file_key] = { id: audio.file_id, message: message }
         update['/songs/' + message.chat.id + '/tracks'] = tracks
         this.db.ref().update(update)
     }
@@ -67,4 +68,44 @@ module.exports = class DB_Handler {
         })
     }
 
+    deleteTrack = (chatId, fileKey) => {   
+        const response = {
+            ok: false, 
+            result: null,          
+            error: null
+        }                
+        return new Promise((resolve) => {
+            this.ref.child(chatId).child('tracks').update({
+               [fileKey] : null
+            }).then(()=>{                                
+                response.ok = true
+                response.result = 'audio'
+            }).catch((err)=>{
+                response.error = err                
+            }).finally(() => {
+                resolve(response)
+            })
+        })       
+        
+    }
+
+    deleteDocument = (chatId, fileName) => {
+        const response = {
+            ok: false, 
+            result: null,          
+            error: null
+        }
+        return new Promise((resolve) => {
+            this.ref.child(chatId).update({
+                'document': null
+            }).then(()=>{                                
+                response.ok = true
+                response.result = fileName
+            }).catch((err)=>{
+                response.error = err                
+            }).finally(() => {
+                resolve(response)
+            })
+        })
+    }
 }

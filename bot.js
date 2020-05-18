@@ -56,11 +56,32 @@ bot.on('channel_post', (ctx) => {
     bothelper.messageHandler(ctx.update.channel_post)       
 })
 
+bot.on('edited_channel_post', async (ctx) => {      
+  if( ctx.update.edited_channel_post.caption === 'delete'){    
+    const isDeleted = await bothelper.deleteMessage(ctx.update.edited_channel_post)    
+    if(isDeleted.ok){
+      ctx.reply(`File ${isDeleted.result} deleted`)
+    }
+  }   
+})
+
 // GROUPS
 
 bot.on('message', (ctx) => {    
     bothelper.messageHandler(ctx.message)    
 })
+
+bot.on('edited_message', async (ctx) => { 
+  
+  if( ctx.update.edited_message.caption === 'delete'){    
+    const isDeleted = await bothelper.deleteMessage(ctx.update.edited_message)    
+    if(isDeleted.ok){
+      ctx.reply(`File ${isDeleted.result} deleted`)
+    }
+  }
+})
+
+// COMMANDS
 
 bot.launch()
 
