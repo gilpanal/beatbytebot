@@ -37,6 +37,16 @@ module.exports = class DB_Handler {
             this.ref.child(message.chat.id).update({
                 'photo': message.new_chat_photo[0].file_id
             })
+        } else if (message.text) {
+            const isCollection = message.text.indexOf('collection:') === 0 
+            if(isCollection){
+                const collectionName = message.text.substring(11)
+                if(collectionName){ 
+                    this.ref.child(message.chat.id).update({
+                        'collection': collectionName
+                    })                   
+                }
+            }                       
         } 
 
     }

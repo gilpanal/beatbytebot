@@ -50,27 +50,49 @@ module.exports = class WebDevServer {
         if (filePath.includes('index')) {
             this.dbhandler.ref.once('value', (snapshot) => {
                 const data = snapshot.val()
-                this.writeResponseForIndex(filePath, data, response)
+                this.writeResponseForIndex(filePath, data, response, extraInfo)
             })
         } else {
             this.getResponseForSong(filePath, response, extraInfo)
         }
 
     }
-    writeResponseForIndex = (filePath, data, response) => {
+    writeResponseForIndex = (filePath, data, response, extraInfo) => {
+        if(extraInfo){
+            this.writeCollectionPage(filePath, response, extraInfo)
+        } else {
+            this.writehomePage(filePath, data, response)
+        } 
+        
+    }
+    writeCollectionPage = (filePath, response, extraInfo) => {
+        const me = this
+        if(extraInfo){
+            const collectionName = decodeURI(extraInfo.substring(extraInfo.indexOf('=') + 1))
+            this.dbhandler.db.ref('/songs/').orderByChild('collection').equalTo(collectionName).on('value', (snapshot) => {                                              
+                me.writehomePage(filePath, snapshot.val(), response)                             
+            })
+        }
+    }
+    writehomePage = (filePath, data, response) => {      
         let listElelemts = ''
         if (data) {
             const keys = Object.keys(data)
             keys.forEach(element => {
-                listElelemts += '<li><a href="song.html?id=' + element + '">' + data[element].title + '</a></li>'
+                let collection = ''               
+                if(data[element].collection){
+                    const collectionName = decodeURI(data[element].collection)                                       
+                    collection = '( '+'<a href="index.html?collection=' + data[element].collection + '">'+ collectionName+'</a>)'
+                }                
+                listElelemts += '<li><a href="song.html?id=' + element + '">' + data[element].title+'</a>'+ collection +'</li>'
             })
         }
         const listTracks = '<ul>' + listElelemts + '</ul>'
         const extname = String(path.extname(filePath)).toLowerCase()
         const contentType = mimeTypes[extname] || 'application/octet-stream'
         response.writeHead(200, { 'Content-Type': contentType })
-        response.write('<html><head><title>Bunch Of Songs</title></head><body>')
-        response.write('<h1>Bunch Of Songs</h1>')
+        response.write('<html><meta charset="utf-8"/><head><title>Bunch Of Songs</title></head><body>')
+        response.write('<a href="./"><h1>Bunch Of Songs</h1></a>')
         response.write(listTracks)
         response.write('<br />')
         response.write('</body></html')
