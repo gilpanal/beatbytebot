@@ -5,26 +5,39 @@ module.exports = class Bot_Helper {
         this.token = token
         this.default_filepath = 'https://api.telegram.org/file/bot'+token+'/'
     }
-    messageHandler = (message) =>{
+    messageHandler = async (message) =>{
     
         const chatId = message.chat.id
-    
-        this.dbhandler.isChannelInDB(chatId).then((response)=>{
-    
-            if(response.ok){         
-                
-                this.dbhandler.insertNewTypeInDB(message, response.result)
-    
-            } else {
-                this.telegram.getChat(chatId).then((chatInfo)=>{  
 
-                    this.dbhandler.createNewEntry (chatId, chatInfo, message)             
+        let result = {
+            ok: false, 
+            result: null,          
+            error: null
+        }
+        // if you talk directly to bot we do not store the chat
+        if(message.chat.title){
+            await this.dbhandler.isChannelInDB(chatId).then(async (response)=>{
+    
+                if(response.ok){         
                     
-                }).catch((err)=>{
-                    console.log(err)
-                })
-            }
-        })  
+                    const insert = await this.dbhandler.insertNewTypeInDB(message, response.result)                                            
+                    result = insert
+                    
+        
+                } else {
+                    await this.telegram.getChat(chatId).then(async (chatInfo)=>{  
+    
+                        const create  = await this.dbhandler.createNewEntry (chatId, chatInfo, message)                              
+                        result = create
+                        
+                    }).catch((err)=>{                    
+                        result.error = err                    
+                    })
+                }
+            }) 
+        }
+       
+        return result 
     }
     deleteMessage = async (edited_message) => {     
         if(edited_message.document){            
