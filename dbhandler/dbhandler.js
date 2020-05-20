@@ -170,4 +170,23 @@ module.exports = class DB_Handler {
             })
         })
     }
+    setChatTitle = (chatId, newName) => {
+        const response = {
+            ok: false,
+            result: null,
+            error: null
+        }        
+        return new Promise((resolve) => {
+            this.ref.child(chatId).update({
+                'title': newName
+            }).then(() => {
+                response.ok = true
+                response.result = 'New title: ' + newName
+            }).catch((err) => {
+                response.error = err
+            }).finally(() => {
+                resolve(response)
+            })
+        })
+    }
 }

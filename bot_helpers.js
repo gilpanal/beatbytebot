@@ -20,9 +20,16 @@ module.exports = class Bot_Helper {
     
                 if(response.ok){         
                     
-                    const insert = await this.dbhandler.insertNewTypeInDB(message, response.result)                                            
-                    result = insert
-                    
+                    if(message.new_chat_title){
+                     
+                        const titleChanged = await this.dbhandler.setChatTitle(message.chat.id, message.new_chat_title)                                             
+                        result = titleChanged
+
+                    } else {
+                     
+                        const insert = await this.dbhandler.insertNewTypeInDB(message, response.result)                                            
+                        result = insert
+                    }
         
                 } else {
                     await this.telegram.getChat(chatId).then(async (chatInfo)=>{  
