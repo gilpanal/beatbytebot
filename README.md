@@ -36,3 +36,8 @@ Once the steps above are followed, to properly test the bot you need to:
 2. Add the bot as an admin to the group.
 3. Type something in the chat group or directly record something with your voice.
 4. Go to http://localhost:8125 and check the name of the channel/group is visible.
+
+
+Wiki: https://github.com/gilpanal/bunchofsongs_bot/wiki
+
+Project Dev Board: https://github.com/gilpanal/bunchofsongs_bot/projects/1
