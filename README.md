@@ -9,7 +9,7 @@ Disclaimer:
 The current status of this project is **NOT READY FOR PRODUCTION** due a security risk which will be covered in a future development. The link to files are retrieved from Telegram servers including the bot token at the URL which is meant to be private and not visible for anyone publicly. So please, do not host the current code as it is right now in a public way or you will expose this vulnerability. Any suggestion to improve or overcome this gap is more than welcome.
 
 Requirements:
-- Node.js (v14)
+- Node.js (v10)
 - Firebase Project and Database: https://firebase.google.com/docs/admin/setup#set-up-project-and-service-account
 - Telegram Bot Token: https://core.telegram.org/bots#6-botfather
 
