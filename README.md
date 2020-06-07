@@ -5,6 +5,9 @@ Summary:
 
 This project is a sample Telegram bot that allows you process specific messages, mainly audio, to display them in a web site to be public.
 
+Disclaimer:
+The current status of this project is NOT READY TO PRODUCTION due a security risk which will be covered in a future development. The link to files are retrieved from Telegram servers including the bot token at the URL which is meant to be private and not visible for anyone publicly. So please, do not host the current code as it is right now in a public way or you will expose this vulnerability. Any suggestion to improve or overcome this gap is more than welcome.
+
 Requirements:
 - Node.js (v14)
 - Firebase Project and Database: https://firebase.google.com/docs/admin/setup#set-up-project-and-service-account
