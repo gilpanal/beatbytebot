@@ -1,19 +1,19 @@
 # bunchofsongs_bot
 Telegram Bot for musicians, educators, sound engineers and people in general to share audio tracks.
 
-Summary:
+## Summary:
 
 This project is a sample Telegram bot that allows you process specific messages, mainly audio, to display them in a web site to be public.
 
-Disclaimer:
+## Disclaimer:
 The current status of this project is **NOT READY FOR PRODUCTION** due a security risk which will be covered in a future development. The link to files are retrieved from Telegram servers including the bot token at the URL which is meant to be private and not visible for anyone publicly. So please, do not host the current code as it is right now in a public way or you will expose this vulnerability. Any suggestion to improve or overcome this gap is more than welcome.
 
-Requirements:
+## Requirements:
 - Node.js (v10)
 - Firebase Project and Database: https://firebase.google.com/docs/admin/setup#set-up-project-and-service-account
 - Telegram Bot Token: https://core.telegram.org/bots#6-botfather
 
-How to run it locally:
+## How to run it locally:
 1. `git clone https://github.com/gilpanal/bunchofsongs_bot.git`
 2. `cd bunchofsongs_bot`
 3. `npm i`
@@ -33,6 +33,8 @@ For local development is enough with the following configuration:
 
 Same happens with `account.json` file, it's only required when using MODE=PROD.
 
+## How to test it:
+
 Once the steps above are followed, to properly test the bot you need to:
 
 1. Go to Telegram and create a new channel or group.
@@ -40,6 +42,7 @@ Once the steps above are followed, to properly test the bot you need to:
 3. Type something in the chat group or directly record something with your voice.
 4. Go to http://localhost:8125 and check the name of the channel/group is visible.
 
+## More info:
 
 Wiki: https://github.com/gilpanal/bunchofsongs_bot/wiki
 
