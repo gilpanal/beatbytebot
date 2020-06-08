@@ -13,7 +13,7 @@ The current status of this project is **NOT READY FOR PRODUCTION** due a securit
 - Firebase Project and Database: https://firebase.google.com/docs/admin/setup#set-up-project-and-service-account
 - Telegram Bot Token: https://core.telegram.org/bots#6-botfather
 
-## How to run it locally:
+## How to run it locally:
 1. `git clone https://github.com/gilpanal/bunchofsongs_bot.git`
 2. `cd bunchofsongs_bot`
 3. `npm i`
@@ -33,7 +33,7 @@ For local development is enough with the following configuration:
 
 Same happens with `account.json` file, it's only required when using MODE=PROD.
 
-## How to test it:
+## How to test it:
 
 Once the steps above are followed, to properly test the bot you need to:
 
