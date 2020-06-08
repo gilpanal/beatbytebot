@@ -17,7 +17,7 @@ The current status of this project is **NOT READY FOR PRODUCTION** due a securit
 1. `git clone https://github.com/gilpanal/bunchofsongs_bot.git`
 2. `cd bunchofsongs_bot`
 3. `npm i`
-5. Adapt `account_dev.json`. More info: https://firebase.google.com/docs/admin/setup#initialize-sdk
+5. Adapt `account_dev.json`. More details: https://github.com/gilpanal/bunchofsongs_bot/wiki/Firebase-Setup
 6. Modify `.env` file to include the Bot Token and the Firebase DB URL
 7. `npm start`
 8. Open http://localhost:8125
