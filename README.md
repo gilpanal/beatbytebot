@@ -1,4 +1,4 @@
-# bunchofsongs_bot
+# beatbytebot
 Telegram Bot for musicians, educators, sound engineers and people in general to share audio tracks.
 
 ## Summary:
@@ -14,10 +14,10 @@ The current status of this project is **NOT READY FOR PRODUCTION** due a securit
 - Telegram Bot Token: https://core.telegram.org/bots#6-botfather
 
 ## How to run it locally:
-1. `git clone https://github.com/gilpanal/bunchofsongs_bot.git`
-2. `cd bunchofsongs_bot`
+1. `git clone https://github.com/gilpanal/beatbytebot.git`
+2. `cd beatbytebot`
 3. `npm i`
-5. Adapt `account_dev.json`. More details: https://github.com/gilpanal/bunchofsongs_bot/wiki/Firebase-Setup
+5. Adapt `account_dev.json`. More details: https://github.com/gilpanal/beatbytebot/wiki/Firebase-Setup
 6. Modify `.env` file to include the Bot Token and the Firebase DB URL
 7. `npm start`
 8. Open http://localhost:8125
@@ -44,6 +44,6 @@ Once the steps above are followed, to properly test the bot you need to:
 
 ## More info:
 
-Wiki: https://github.com/gilpanal/bunchofsongs_bot/wiki
+Wiki: https://github.com/gilpanal/beatbytebot/wiki
 
-Project Dev Board: https://github.com/gilpanal/bunchofsongs_bot/projects/1
+Project Dev Board: https://github.com/gilpanal/beatbytebot/projects/1
