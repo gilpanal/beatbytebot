@@ -1,9 +1,7 @@
 module.exports = class Bot_Helper {
-    constructor(dbhandler, telegram, token) {
+    constructor(dbhandler, telegram) {
         this.dbhandler = dbhandler
         this.telegram = telegram 
-        this.token = token
-        this.default_filepath = 'https://api.telegram.org/file/bot'+token+'/'
     }
     messageHandler = async (message) =>{
     
@@ -61,7 +59,7 @@ module.exports = class Bot_Helper {
     
     getDocFilePath = async (file_id) => {
         const doc = await this.fetchFileInfo(file_id, {})       
-        return this.default_filepath+doc.result.file_path 
+        return doc.result ? doc.result.file_path : null
     }
     fetchFileInfo = (file_id, message) => {
         const response = {

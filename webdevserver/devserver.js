@@ -117,20 +117,26 @@ module.exports = class WebDevServer {
         
         const tracks = snapshot.val().tracks
         const lyrics = snapshot.val().document
+        const chatphoto = snapshot.val().photo
         objSong.channelName = snapshot.val().title
         const doc = lyrics && this.bothelper.getDocFilePath(lyrics.file_id).then((doc_path) => {
             return doc_path
+        })
+        const photo = chatphoto && this.bothelper.getDocFilePath(chatphoto).then((img_path) => {            
+            return img_path
         })
         const alltracks = tracks && this.bothelper.getAllTracksInfo(tracks).then((allTracks) => {
             return this.generateListOfHtml(allTracks)
 
         })
         const docPromise = doc || ''
+        const photoPromise = photo || ''
         const tracksPromise = alltracks || ''
 
-        Promise.all([docPromise, tracksPromise]).then((values) => {
+        Promise.all([docPromise, photoPromise, tracksPromise]).then((values) => {
             objSong.lyricsFile = values[0]
-            objSong.listHtml = values[1]
+            objSong.photoFile = values[1]
+            objSong.listHtml = values[2]
             callBack(filePath, objSong, response)            
         }).catch((reason) => {
             console.log(reason)
@@ -139,10 +145,11 @@ module.exports = class WebDevServer {
     generateListOfHtml = (allTracks) => {
         let listHtml = ''
         allTracks.forEach(element => {
-            const messageInfo = element.result
-            const audio = messageInfo.message.voice || messageInfo.message.audio
-            const fullLink = this.bothelper.default_filepath + messageInfo.file_path
-            listHtml += '<br><audio controls class="audio-file"><source src="' + fullLink + '" type="' + audio.mime_type + '"></audio>'
+            if(element.result){
+                const messageInfo = element.result
+                const audio = messageInfo.message.voice || messageInfo.message.audio
+                listHtml += `<p>${messageInfo.file_path}<span>; Mime-Type: ${audio.mime_type}</span></p>`
+            }
         })
         return listHtml
     }
@@ -153,12 +160,13 @@ module.exports = class WebDevServer {
         response.write('<html><head><title>' + objSong.channelName + '</title></head><body>')
         response.write('<a class="" href="/">Back</a><h4>' + objSong.channelName + '</h4>')
         if (objSong.lyricsFile) {
-            response.write('<a class="" target="_blank" href="' + objSong.lyricsFile + '">Lyrics</a><br>')
+            response.write(`<p><i>Document: ${objSong.lyricsFile}</i><p>`)
         }
-        response.write('<br><button onclick="play()">PLAY ALL</button><button onclick="pause()">PAUSE</button><br>')
+        if (objSong.photoFile) {
+            response.write(`<p><i>Photo: ${objSong.photoFile}</i><p>`)
+        }
+        response.write('<p><i>Tracks:</i></p>')
         response.write(objSong.listHtml)
-        response.write('<script type="text/javascript">function pause(){const e=document.getElementsByClassName("audio-file");for(let l of e)l.pause()}</script>')
-        response.write('<script type="text/javascript">function play(){const e=document.getElementsByClassName("audio-file");for(let l of e)l.play()}</script></body></html')
         response.end()
     }
 }

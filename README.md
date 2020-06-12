@@ -5,8 +5,15 @@ Telegram Bot for musicians, educators, sound engineers and people in general to 
 
 This project is a sample Telegram bot that allows you process specific messages, mainly audio, to display them in a web site to be public.
 
-## Disclaimer:
-The current status of this project is **NOT READY FOR PRODUCTION** due a security risk which will be covered in a future development. The link to files are retrieved from Telegram servers including the bot token at the URL which is meant to be private and not visible for anyone publicly. So please, do not host the current code as it is right now in a public way or you will expose this vulnerability. Any suggestion to improve or overcome this gap is more than welcome.
+## Demo:
+If you want to see a real example just follow these steps:
+1. In Telegram, create a new channel or group
+2. Add the bot called "bunchofsongsbot" as an admin to the chat
+3. Record something or attach an audio file
+4. Visit: https://sheltered-meadow-50218.herokuapp.com/ and check the content was successfully created
+5. Visit https://bunchofsongs.web.app/ to actually listen to your audio tracks
+
+Current features: https://github.com/gilpanal/beatbytebot/wiki/Current-Features
 
 ## Requirements:
 - Node.js (v10)
@@ -32,15 +39,6 @@ For local development is enough with the following configuration:
 >       DATABASE_URL_DEV=https://<YOUR_PROJECT>.firebaseio.com
 
 Same happens with `account.json` file, it's only required when using MODE=PROD.
-
-## How to test it:
-
-Once the steps above are followed, to properly test the bot you need to:
-
-1. Go to Telegram and create a new channel or group.
-2. Add the bot as an admin to the group.
-3. Type something in the chat group or directly record something with your voice.
-4. Go to http://localhost:8125 and check the name of the channel/group is visible.
 
 ## More info:
 

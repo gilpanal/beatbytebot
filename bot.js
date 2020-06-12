@@ -31,7 +31,7 @@ const token = (MODE === 'DEV') ? process.env.TELEGRAM_TOKEN_DEV : process.env.TE
 const bot = new Telegraf(token)
 const telegram = new Telegram(token)
 const BotHelpers = require('./bot_helpers')
-const bothelper = new BotHelpers(dbhandler, telegram, token)
+const bothelper = new BotHelpers(dbhandler, telegram)
 
 /**
  *  WEB DEV SERVER STUFF
@@ -89,9 +89,6 @@ bot.on('edited_message', async (ctx) => {
   }
 })
 
-// COMMANDS
-
 bot.launch()
-
 
 console.log('Server running at port: ', process.env.PORT || 8125)
