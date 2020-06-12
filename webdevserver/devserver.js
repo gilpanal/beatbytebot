@@ -91,8 +91,8 @@ module.exports = class WebDevServer {
         const extname = String(path.extname(filePath)).toLowerCase()
         const contentType = mimeTypes[extname] || 'application/octet-stream'
         response.writeHead(200, { 'Content-Type': contentType })
-        response.write('<html><meta charset="utf-8"/><head><title>Bunch Of Songs</title></head><body>')
-        response.write('<a href="./"><h1>Bunch Of Songs</h1></a>')
+        response.write('<html><meta charset="utf-8"/><head><title>Beat 8yte ꓭot</title></head><body>')
+        response.write('<a href="./"><h1>Beat 8yte ꓭot</h1></a>')
         response.write(listTracks)
         response.write('<br />')
         response.write('</body></html')

@@ -2,6 +2,7 @@ node_modules
 package-lock.json
 .DS_Store
 heroku_dev
+heroku_prod
 .env
 account.json
 account_dev.json
